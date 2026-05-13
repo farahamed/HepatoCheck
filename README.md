@@ -39,10 +39,66 @@ Run the application:
 python main.py
 ```
 
+## Application Features
+
+HepatoCheck provides a user-facing Tkinter application for liver risk screening.
+
+Main features include:
+
+- Home page with project overview and navigation
+- Single patient input form
+- Input validation for missing or invalid clinical values
+- Liver risk prediction using the trained machine learning model
+- Result display page showing:
+  - Risk classification
+  - Model confidence
+  - Low-risk and possible-risk probabilities
+  - Abnormal lab value flags
+  - Recommendation message
+  - Top important model features
+- Medical disclaimer page
+- Batch CSV upload for multiple patient records
+- Batch prediction table
+- Export batch results to CSV
+- Screening history page
+- Export screening history to TXT
+- Error handling for invalid inputs, missing files, and prediction issues
+
+## Required Patient Inputs
+
+For single-patient prediction and batch CSV prediction, the following input features are required:
+
+| Feature | Description |
+|---|---|
+| Age | Patient age |
+| Sex | Patient biological sex, accepted values: `m`, `f`, `male`, `female` |
+| ALB | Albumin |
+| ALP | Alkaline phosphatase |
+| ALT | Alanine aminotransferase |
+| AST | Aspartate aminotransferase |
+| BIL | Bilirubin |
+| CHE | Cholinesterase |
+| CHOL | Cholesterol |
+| CREA | Creatinine |
+| GGT | Gamma-glutamyl transferase |
+| PROT | Total protein |
+
+## Batch CSV Format
+
+The batch upload page accepts CSV files containing the same required patient features.
+
+The CSV file must include the following columns:
+
+```csv
+Age,Sex,ALB,ALP,ALT,AST,BIL,CHE,CHOL,CREA,GGT,PROT
+
+
+
+
 ## Team Structure
-- **Teammate**: Data processing, ML models, training pipeline
-- **Partner**: GUI development, application controller
-- **Shared**: Testing, documentation, utilities
+- **ML Developer**: Data processing, ML models, training pipeline, model evaluation
+- **GUI Developer**: Tkinter interface, application controller, input validation, result display, batch upload, export features
+- **Shared**: Testing, documentation, utilities, final integration
 
 ## Contributing
 See `docs/contribution_matrix.md` for contribution guidelines.
