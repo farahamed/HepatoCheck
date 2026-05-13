@@ -12,6 +12,7 @@ import json
 import joblib
 import numpy as np
 import pandas as pd
+import warnings
 from time import time
 
 try:
@@ -49,6 +50,12 @@ except ModuleNotFoundError:
     from src.utils.paths import MODELS_DIR
 
 RANDOM_STATE = 42
+
+warnings.filterwarnings(
+    "ignore",
+    message="X does not have valid feature names, but LGBMClassifier was fitted with feature names",
+    category=UserWarning,
+)
 
 def nested_cv_score(pipeline, X, y, outer_cv):
     return cross_val_score(pipeline, X, y, cv=outer_cv, scoring='roc_auc', n_jobs=-1)
@@ -94,8 +101,16 @@ def calibrate_and_eval(best_pipeline, X_train, X_test, y_train, y_test):
     # create pipeline without SMOTE for calibration (calibration needs predict_proba from classifier)
     # we will fit the pipeline (scaler + clf) and use CalibratedClassifierCV wrapping the classifier
     scaler = best_pipeline.named_steps['scaler']
-    X_train_scaled = scaler.transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    X_train_scaled = pd.DataFrame(
+        scaler.transform(X_train),
+        columns=X_train.columns,
+        index=X_train.index,
+    )
+    X_test_scaled = pd.DataFrame(
+        scaler.transform(X_test),
+        columns=X_test.columns,
+        index=X_test.index,
+    )
 
     calib = CalibratedClassifierCV(base_clf, cv=3)
     calib.fit(X_train_scaled, y_train)
@@ -121,10 +136,16 @@ def shap_pruning(best_estimator, X, feature_names, fraction=0.2):
     explainer = shap.TreeExplainer(best_estimator.named_steps['clf'])
     # use scaled X
     scaler = best_estimator.named_steps['scaler']
-    Xs = scaler.transform(X)
+    Xs = pd.DataFrame(
+        scaler.transform(X),
+        columns=feature_names,
+        index=X.index,
+    )
     shap_vals = explainer.shap_values(Xs)
     vals = shap_vals[1] if isinstance(shap_vals, list) else shap_vals
     mean_abs = np.abs(vals).mean(axis=0)
+    if getattr(mean_abs, "ndim", 1) > 1:
+        mean_abs = mean_abs.mean(axis=-1)
     thresh = np.quantile(mean_abs, fraction)
     keep = mean_abs > thresh
     return keep, mean_abs
@@ -169,7 +190,7 @@ def run_all(external_holdout_path=None):
 
     # SHAP pruning
     keep_idx, mean_abs = shap_pruning(best_pipe, X_train, feature_names, fraction=0.2)
-    shap_kept = [f for f, k in zip(feature_names, keep_idx) if k]
+    shap_kept = [f for f, k in zip(feature_names, keep_idx) if bool(k)]
     results['shap_kept'] = shap_kept
 
     # Save results
