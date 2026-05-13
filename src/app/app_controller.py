@@ -122,8 +122,6 @@ class AppController:
                     **record,
                     "prediction_label": prediction.get("prediction_label"),
                     "confidence": prediction.get("confidence"),
-                    "probability_low_risk": prediction.get("probability_low_risk"),
-                    "probability_possible_risk": prediction.get("probability_possible_risk"),
                     "recommendation": prediction.get("recommendation"),
                 }
 

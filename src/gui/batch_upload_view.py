@@ -86,7 +86,6 @@ class BatchUploadView(tk.Frame):
             "Age", "Sex", "ALB", "ALP", "ALT", "AST", "BIL",
             "CHE", "CHOL", "CREA", "GGT", "PROT",
             "prediction_label", "confidence",
-            "probability_low_risk", "probability_possible_risk",
         ]
 
         self.tree = ttk.Treeview(
@@ -191,8 +190,6 @@ class BatchUploadView(tk.Frame):
                 row.get("PROT", ""),
                 row.get("prediction_label", ""),
                 row.get("confidence", ""),
-                row.get("probability_low_risk", ""),
-                row.get("probability_possible_risk", ""),
             ]
 
             self.tree.insert("", tk.END, values=values)

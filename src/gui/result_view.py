@@ -60,15 +60,6 @@ class ResultView(tk.Frame):
         )
         self.confidence_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
 
-        self.probability_label = tk.Label(
-            self.card,
-            text="",
-            bg=COLORS["surface"],
-            fg=COLORS["muted"],
-            font=FONTS["body"],
-        )
-        self.probability_label.grid(row=2, column=0, sticky="w", pady=(0, 20))
-
         self.recommendation_label = tk.Label(
             self.card,
             text="",
@@ -126,8 +117,6 @@ class ResultView(tk.Frame):
     def show_result(self, result: dict):
         label = result.get("prediction_label", "Unknown")
         confidence = result.get("confidence", 0)
-        low_prob = result.get("probability_low_risk", "N/A")
-        risk_prob = result.get("probability_possible_risk", "N/A")
         recommendation = result.get("recommendation", "No recommendation available.")
 
         if label == "Low Risk":
@@ -145,10 +134,6 @@ class ResultView(tk.Frame):
 
         self.confidence_label.configure(
             text=f"Model confidence: {confidence}"
-        )
-
-        self.probability_label.configure(
-            text=f"Low risk probability: {low_prob}    |    Possible risk probability: {risk_prob}"
         )
 
         self.recommendation_label.configure(
@@ -171,13 +156,27 @@ class ResultView(tk.Frame):
 
         top_features = result.get("top_features") or result.get("key_markers") or {}
 
+        # Handle different types of top_features
+        feature_lines = []
+
         if top_features:
-            feature_lines = [
-                f"• {feature}: {round(float(importance), 4) if isinstance(importance, (int, float)) else importance}"
-                for feature, importance in top_features.items()
-            ]
+            if isinstance(top_features, dict):
+                # If it's a dictionary with feature: importance pairs
+                for feature, importance in top_features.items():
+                    if isinstance(importance, (int, float)):
+                        feature_lines.append(f"• {feature}: {importance:.4f}")
+                    else:
+                        feature_lines.append(f"• {feature}: {importance}")
+            
+            elif isinstance(top_features, list):
+                # If it's a list of feature names (no importance values)
+                for feature in top_features:
+                    feature_lines.append(f"• {feature}")
+            
+            else:
+                feature_lines = ["Feature importance data is in an unexpected format."]
         else:
-            feature_lines = ["Feature importance is not available."]
+            feature_lines = ["No feature importance data available."]
 
         self.features_box.content_label.configure(
             text="\n".join(feature_lines)
