@@ -260,14 +260,16 @@ class MainWindow:
             ("Screening History", "Review predictions made during the current app session."),
         ]
 
-        for i, (title, desc) in enumerate(features, start=1):
+        for i, (title, desc) in enumerate(features):
+            base_row = i * 2 + 1
+
             tk.Label(
                 card,
                 text=title,
                 bg=COLORS["surface"],
                 fg=COLORS["text"],
                 font=FONTS["section_title"],
-            ).grid(row=i, column=0, sticky="w", pady=(10, 0))
+            ).grid(row=base_row, column=0, sticky="w", pady=(10, 0))
 
             tk.Label(
                 card,
@@ -275,7 +277,7 @@ class MainWindow:
                 bg=COLORS["surface"],
                 fg=COLORS["muted"],
                 font=FONTS["body"],
-            ).grid(row=i + 10, column=0, sticky="w", pady=(2, 4))
+            ).grid(row=base_row + 1, column=0, sticky="w", pady=(2, 4))
 
         action_frame = tk.Frame(page, bg=COLORS["bg"])
         action_frame.grid(row=3, column=0, sticky="w", pady=24)
