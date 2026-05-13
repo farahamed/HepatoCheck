@@ -61,6 +61,35 @@ class AppController:
 
         return len(errors) == 0, errors
 
+    def prepare_patient_input(self, data: dict) -> dict:
+        """
+        Convert validated GUI/CSV string input into model-ready values.
+
+        Tkinter Entry and CSV values arrive as strings.
+        This method converts numeric fields to floats and normalizes Sex.
+        It also rebuilds the dictionary using FEATURE_REQUEST_ORDER so the
+        order matches the model/backend expectation.
+        """
+        prepared = {}
+
+        for feature in FEATURE_REQUEST_ORDER:
+            value = data[feature]
+
+            if feature == "Sex":
+                sex = str(value).strip().lower()
+
+                if sex in {"male", "m"}:
+                    prepared[feature] = "m"
+                elif sex in {"female", "f"}:
+                    prepared[feature] = "f"
+                else:
+                    prepared[feature] = sex
+
+            else:
+                prepared[feature] = float(value)
+
+        return prepared
+
     def predict(self, data: dict) -> dict:
         """
         Validate input, run prediction, save to history, and return result.
@@ -75,11 +104,13 @@ class AppController:
             }
 
         try:
-            result = predict_liver_risk(data)
+            prepared_data = self.prepare_patient_input(data)
+
+            result = predict_liver_risk(prepared_data)
 
             record = {
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "input": data,
+                "input": prepared_data,
                 "result": result,
             }
 
@@ -116,10 +147,12 @@ class AppController:
                 continue
 
             try:
-                prediction = predict_liver_risk(record)
+                prepared_record = self.prepare_patient_input(record)
+
+                prediction = predict_liver_risk(prepared_record)
 
                 output_row = {
-                    **record,
+                    **prepared_record,
                     "prediction_label": prediction.get("prediction_label"),
                     "confidence": prediction.get("confidence"),
                     "recommendation": prediction.get("recommendation"),
@@ -129,7 +162,7 @@ class AppController:
 
                 self.history.append({
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "input": record,
+                    "input": prepared_record,
                     "result": prediction,
                 })
 
