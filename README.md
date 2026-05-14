@@ -87,8 +87,6 @@ For single-patient prediction and batch CSV prediction, the following input feat
 
 The batch upload page accepts CSV files containing the same required patient features.
 
-The CSV file must include the following columns:
-
 ```csv
 Age,Sex,ALB,ALP,ALT,AST,BIL,CHE,CHOL,CREA,GGT,PROT
 
@@ -120,7 +118,7 @@ See `docs/contribution_matrix.md` for contribution guidelines.
 
 ---
 
-# 🧪 Evaluation Strategy
+# Evaluation Strategy
 
 - Stratified train/test split
 - 5-Fold Cross Validation
@@ -130,7 +128,7 @@ See `docs/contribution_matrix.md` for contribution guidelines.
 
 ---
 
-# 🔍 Explainability
+# Explainability
 
 We used SHAP (SHapley Additive Explanations) to:
 
@@ -141,7 +139,7 @@ We used SHAP (SHapley Additive Explanations) to:
 
 ---
 
-# 🚨 Imbalance Handling
+# Imbalance Handling
 
 Because dataset is highly imbalanced:
 
@@ -152,7 +150,7 @@ Because dataset is highly imbalanced:
 
 ---
 
-# 🖥️ GUI System
+# GUI System
 
 The system includes:
 
@@ -168,7 +166,7 @@ The system includes:
 
 ---
 
-# 📌 Key Outcome
+# Key Outcome
 
 HepatoCheck provides:
 - High accuracy liver disease prediction
@@ -177,7 +175,7 @@ HepatoCheck provides:
 
 ---
 
-# 👨‍💻 Technologies Used
+# Technologies Used
 
 - Python
 - Scikit-learn
@@ -190,7 +188,7 @@ HepatoCheck provides:
 
 ---
 
-# 📈 Performance Summary
+# Performance Summary
 
 - Best Model: RandomForest
 - ROC-AUC: 0.9878
